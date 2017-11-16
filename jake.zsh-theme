@@ -1,4 +1,4 @@
-# base these themes:
+# based these themes:
 #   fino-time.zsh-theme
 #   ys.zsh-theme
 #   zeta.zsh-theme
@@ -29,15 +29,22 @@ ZSH_THEME_GIT_PROMPT_ADDED="%{$green_bold%}+"
 ZSH_THEME_GIT_PROMPT_DELETED="%{$red_bold%}-"
 ZSH_THEME_GIT_PROMPT_MODIFIED="%{$red_bold%}*"
 ZSH_THEME_GIT_PROMPT_RENAMED="%{$blue_bold%}>"
-ZSH_THEME_GIT_PROMPT_UNMERGED="%{$yellow_bold%}="
+ZSH_THEME_GIT_PROMPT_UNMERGED="%{$yellow_bold%}≠"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$yellow_bold%}?"
-
 
 local current_dir='${PWD/#$HOME/~}'
 
 local box_name='$(get_box_name)'
 function get_box_name {
     [ -f ~/.box-name ] && cat ~/.box-name || echo ${SHORT_HOST:-$HOST}
+}
+
+local git_short_sha='$(get_git_short_sha)'
+function get_git_short_sha {
+    local short_sha="$(git_prompt_short_sha)"
+    if [[ -n $short_sha ]]; then
+        echo ":${short_sha}"
+    fi
 }
 
 local time_stamp='$(get_time_stamp)'
@@ -53,14 +60,15 @@ function get_git_prompt {
             git_status="[$git_status%{$reset_color%}]"
             ZSH_THEME_GIT_PROMPT_PREFIX="%{$red%}"
         fi
-        local git_prompt=" %{$gray%}<%{$reset_color%}$(git_prompt_info)$git_status%{$gray%}>%{$reset_color%}"
+        local short_sha="$(get_git_short_sha)"
+        local git_prompt=" $(git_prompt_info)$short_sha$git_status"
         echo $git_prompt
     fi
 }
 
 
 PROMPT="
-# \
+❖ \
 %{$green%}%n%{$reset_color%} \
 %{$gray%}at%{$reset_color%} \
 %{$blue%}${box_name}%{$reset_color%} \
@@ -68,4 +76,4 @@ PROMPT="
 %{$yellow_bold%}${current_dir}%{$reset_color%}\
 ${git_prompt} \
 %{$gray%}${time_stamp}%{$reset_color%}
-%{$red%}$%{$reset_color%} "
+%{$red%}➤%{$reset_color%} "
